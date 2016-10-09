@@ -21,6 +21,8 @@ class MultibyteGraphemeBreakConformanceTest < ActiveSupport::TestCase
   end
 
   def test_breaks
+    grapheme_skip
+
     each_line_of_break_tests do |*cols|
       *clusters, comment = *cols
       packed = ActiveSupport::Multibyte::Unicode.pack_graphemes(clusters)

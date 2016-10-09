@@ -493,33 +493,35 @@ end
 class MultibyteCharsExtrasTest < ActiveSupport::TestCase
   include MultibyteTestHelpers
 
-  def test_upcase_should_be_unicode_aware
-    assert_equal "АБВГД\0F", chars("аБвгд\0f").upcase
-    assert_equal "こにちわ", chars("こにちわ").upcase
-  end
-
-  def test_downcase_should_be_unicode_aware
-    assert_equal "абвгд\0f", chars("аБвгд\0F").downcase
-    assert_equal "こにちわ", chars("こにちわ").downcase
-  end
-
-  def test_swapcase_should_be_unicode_aware
-    assert_equal "аaéÜ\0f", chars("АAÉü\0F").swapcase
-    assert_equal "こにちわ", chars("こにちわ").swapcase
-  end
-
-  def test_capitalize_should_be_unicode_aware
-    { "аБвг аБвг" => "Абвг абвг",
-      "аБвг АБВГ" => "Абвг абвг",
-      "АБВГ АБВГ" => "Абвг абвг",
-      "" => "" }.each do |f,t|
-      assert_equal t, chars(f).capitalize
+  if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.4.0")
+    def test_upcase_should_be_unicode_aware
+      assert_equal "АБВГД\0F", chars("аБвгд\0f").upcase
+      assert_equal "こにちわ", chars("こにちわ").upcase
     end
-  end
 
-  def test_titleize_should_be_unicode_aware
-    assert_equal "Él Que Se Enteró", chars("ÉL QUE SE ENTERÓ").titleize
-    assert_equal "Абвг Абвг", chars("аБвг аБвг").titleize
+    def test_downcase_should_be_unicode_aware
+      assert_equal "абвгд\0f", chars("аБвгд\0F").downcase
+      assert_equal "こにちわ", chars("こにちわ").downcase
+    end
+
+    def test_swapcase_should_be_unicode_aware
+      assert_equal "аaéÜ\0f", chars("АAÉü\0F").swapcase
+      assert_equal "こにちわ", chars("こにちわ").swapcase
+    end
+
+    def test_capitalize_should_be_unicode_aware
+      { "аБвг аБвг" => "Абвг абвг",
+        "аБвг АБВГ" => "Абвг абвг",
+        "АБВГ АБВГ" => "Абвг абвг",
+        "" => "" }.each do |f,t|
+        assert_equal t, chars(f).capitalize
+      end
+    end
+
+    def test_titleize_should_be_unicode_aware
+      assert_equal "Él Que Se Enteró", chars("ÉL QUE SE ENTERÓ").titleize
+      assert_equal "Абвг Абвг", chars("аБвг аБвг").titleize
+    end
   end
 
   def test_titleize_should_not_affect_characters_that_do_not_case_fold
@@ -607,6 +609,8 @@ class MultibyteCharsExtrasTest < ActiveSupport::TestCase
   end
 
   def test_should_compute_grapheme_length
+    grapheme_skip
+
     [
       ["", 0],
       ["abc", 3],
